@@ -1,0 +1,40 @@
+{
+    "configurations": [
+        
+        {
+            "type": "node",
+            "name": "vscode-jest-tests",
+            "request": "launch",
+            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/react-scripts",
+            "args": [
+                "test",
+                "--env=jsdom",
+                "--runInBand",
+                "--watchAll=false"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "protocol": "inspector",
+            "internalConsoleOptions": "neverOpen",
+            "disableOptimisticBPs": true
+        },
+
+        {
+            "type": "node",
+            "name": "vscode-jest-tests",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "disableOptimisticBPs": true,
+            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/react-scripts",
+            "protocol": "inspector",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}\\enter",
+            "args": [
+                "test",
+                "--runInBand",
+                "--watchAll=false"
+            ]
+        }
+    ]
+}
