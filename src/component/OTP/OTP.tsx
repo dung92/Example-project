@@ -3,6 +3,9 @@ import { Box, MenuItem, Typography, Button, TextField, InputAdornment, Grid, Hid
 import { FormikHelpers, Formik, Form, Field, FieldProps } from 'formik';
 import * as yup from 'yup';
 import { ModelOTP } from './model';
+import firebase from '../../config/firebase';
+import Firebase from 'firebase/app';
+import { object } from 'prop-types';
 
 const validationSchema = yup.object().shape({
   phone: yup.string()
@@ -10,6 +13,7 @@ const validationSchema = yup.object().shape({
   country: yup.string()
     .required('Country is required'),
 })
+
 
 
 const OTP = () => {
@@ -24,6 +28,9 @@ const OTP = () => {
     phone: '',
     country: ''
   });
+
+  const [final, setfinal] = useState({});
+
   const [errorOTP, setErrorOTP] = useState({
     errorValidNumber: '',
     errorNullOTP: ''
@@ -35,6 +42,7 @@ const OTP = () => {
       errorNullOTP: ''
     })
   }, [showOTP])
+
 
   useEffect(() => {
     // Update the document title using the browser API
@@ -51,6 +59,17 @@ const OTP = () => {
         setErrorOTP({ errorValidNumber: '', errorNullOTP: 'Please fill all input' })
       }
     } else {
+      if (valueFirstInput !== '' && valueSecondInput !== '' && valueThirdInput !== '' && valueFourInput !== '' && valueFiveInput !== '' && valueSixInput !== '') {
+        const valueInputOtp = `${valueFirstInput}${valueSecondInput}${valueThirdInput}${valueFourInput}${valueFiveInput}${valueSixInput}`;
+        // if (Object.keys(final).length > 0) {
+        //   final.confirm(valueInputOtp).then((result) => {
+        //     // success
+        //     console.log('')
+        //   }).catch((err) => {
+        //     alert("Wrong code");
+        //   })
+        // }
+      }
       if (valueFirstInput !== '' || valueSecondInput !== '' || valueThirdInput !== '' || valueFourInput !== '' || valueFiveInput !== '' || valueSixInput !== '') {
         if (!valueFirstInput.match(numbers) || !valueSecondInput.match(numbers) || !valueThirdInput.match(numbers) || !valueFourInput.match(numbers) || !valueFiveInput.match(numbers) || !valueSixInput.match(numbers)) {
           setErrorOTP({ errorValidNumber: 'Invaid OTP', errorNullOTP: '' })
@@ -61,6 +80,7 @@ const OTP = () => {
         setErrorOTP({ errorValidNumber: '', errorNullOTP: 'Please fill all input' })
       }
     }
+
 
   }, [valueFirstInput, valueSecondInput, valueThirdInput, valueFourInput, valueFiveInput, valueSixInput]);
 
@@ -88,6 +108,7 @@ const OTP = () => {
     setValueSixInput(event.target.value)
   }
 
+
   return (
     <Box>
       <Box textAlign="left" padding="20px" marginTop="20px">
@@ -108,9 +129,18 @@ const OTP = () => {
               values: ModelOTP,
               { setSubmitting }: FormikHelpers<ModelOTP>
             ) => {
-              setValueSubmit(values);
-              setSubmitting(false);
-              setShowOTP(true);
+
+              let verify = new Firebase.auth.RecaptchaVerifier('recaptcha-container');
+              firebase.auth().signInWithPhoneNumber(values.phone, verify).then((confirmationResult) => {
+                console.log(confirmationResult, 'confirmationResult')
+                console.log("OTP has been sent")
+                setfinal(confirmationResult);
+                setSubmitting(false);
+                setShowOTP(true)
+              }).catch((error) => {
+                console.log("SMS not sent")
+              });
+
             }}
           >
             {({ errors, touched, submitForm }) => (
@@ -202,6 +232,7 @@ const OTP = () => {
                       Verify Number
                     </Button>
                   </Hidden>
+                  <div id="recaptcha-container" />
                 </Box>
 
                 <Box marginTop="20px">
@@ -231,7 +262,6 @@ const OTP = () => {
                     </Grid>
                   </Grid>
                 </Box>
-
               </Form>
             )}
           </Formik> :
@@ -278,6 +308,7 @@ const OTP = () => {
                 <Grid item md={4}>
                 </Grid>
               </Grid>
+
             </Box>
           }
 
