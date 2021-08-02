@@ -51,7 +51,7 @@ export const VerificationNumber = (props: ModelVerifiCationNumberProp) => {
                 setSubmitting(false);
                 const valueSubmitPhone = { ...values };
                 let verify = new Firebase.auth.RecaptchaVerifier('recaptcha-container');
-                firebase.auth().signInWithPhoneNumber(valueSubmitPhone.phone.toString(), verify).then((confirmationResult) => {
+                firebase.auth().signInWithPhoneNumber(valueSubmitPhone.phone + `+${values.countryCode}`.toString(), verify).then((confirmationResult) => {
                     setfinal(confirmationResult);
                     setValueSubmit({
                         phone: values.phone,
