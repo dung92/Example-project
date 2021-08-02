@@ -5,7 +5,6 @@ import * as yup from 'yup';
 import { ModelOTP } from './model';
 import firebase from '../../config/firebase';
 import Firebase from 'firebase/app';
-import { object } from 'prop-types';
 
 const validationSchema = yup.object().shape({
   phone: yup.string()
@@ -61,14 +60,15 @@ const OTP = () => {
     } else {
       if (valueFirstInput !== '' && valueSecondInput !== '' && valueThirdInput !== '' && valueFourInput !== '' && valueFiveInput !== '' && valueSixInput !== '') {
         const valueInputOtp = `${valueFirstInput}${valueSecondInput}${valueThirdInput}${valueFourInput}${valueFiveInput}${valueSixInput}`;
-        // if (Object.keys(final).length > 0) {
-        //   final.confirm(valueInputOtp).then((result) => {
-        //     // success
-        //     console.log('')
-        //   }).catch((err) => {
-        //     alert("Wrong code");
-        //   })
-        // }
+      
+         
+          Object.getPrototypeOf(final).confirm(valueInputOtp).then((result: any) => {
+            // success
+            console.log('ok-done')
+          }).catch((err: any) => {
+            alert("Wrong code");
+          })
+        
       }
       if (valueFirstInput !== '' || valueSecondInput !== '' || valueThirdInput !== '' || valueFourInput !== '' || valueFiveInput !== '' || valueSixInput !== '') {
         if (!valueFirstInput.match(numbers) || !valueSecondInput.match(numbers) || !valueThirdInput.match(numbers) || !valueFourInput.match(numbers) || !valueFiveInput.match(numbers) || !valueSixInput.match(numbers)) {
@@ -129,10 +129,13 @@ const OTP = () => {
               values: ModelOTP,
               { setSubmitting }: FormikHelpers<ModelOTP>
             ) => {
-
+              setValueSubmit({
+                country:'',
+                phone: values.phone
+              })
               let verify = new Firebase.auth.RecaptchaVerifier('recaptcha-container');
               firebase.auth().signInWithPhoneNumber(values.phone, verify).then((confirmationResult) => {
-                console.log(confirmationResult, 'confirmationResult')
+                console.log(Object.getPrototypeOf(confirmationResult).confirm(), 'confirmationResult')
                 console.log("OTP has been sent")
                 setfinal(confirmationResult);
                 setSubmitting(false);
