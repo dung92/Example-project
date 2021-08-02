@@ -32,7 +32,7 @@ export const VerificationNumber = (props: ModelVerifiCationNumberProp) => {
             .required('Country is required'),
     })
     const classes = useStyles();
-    
+
     const rederectToLogin = () => {
         setShowLogin(true);
     }
@@ -51,7 +51,7 @@ export const VerificationNumber = (props: ModelVerifiCationNumberProp) => {
                 setSubmitting(false);
                 const valueSubmitPhone = { ...values };
                 let verify = new Firebase.auth.RecaptchaVerifier('recaptcha-container');
-                firebase.auth().signInWithPhoneNumber(valueSubmitPhone.phone + `+${values.countryCode}`.toString(), verify).then((confirmationResult) => {
+                firebase.auth().signInWithPhoneNumber(`+${values.countryCode}` + valueSubmitPhone.phone, verify).then((confirmationResult) => {
                     setfinal(confirmationResult);
                     setValueSubmit({
                         phone: values.phone,
@@ -91,7 +91,9 @@ export const VerificationNumber = (props: ModelVerifiCationNumberProp) => {
                                             className={classes.rootSelect}
                                         >
                                             {countryCodeArray.map((item, key) =>
+
                                                 <MenuItem key={key} value={item.dial_code}>{`+${item.dial_code}`}</MenuItem>
+
                                             )}
 
                                         </TextField>

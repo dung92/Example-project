@@ -7,6 +7,7 @@ export interface ModelVerifiCationNumberProp {
     setShowOTP: React.Dispatch<React.SetStateAction<boolean>>,
     countryCodeArray: Array<{
         code: string,
-        dial_code: string
+        dial_code: string,
+        name: string
     }>,
 }

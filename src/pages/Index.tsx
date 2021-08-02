@@ -33,6 +33,7 @@ const useStyles = makeStyles(() => ({
     })
     const [open, setOpen] = useState(false);
     const [showLogin, setShowLogin] = useState(false);
+    const [openLogin, setOpenLogin] = useState(false);
   
     const classes = useStyles();
   
@@ -60,8 +61,9 @@ const useStyles = makeStyles(() => ({
         }
       } else {
         if (valueFirstOTP !== '' && valueSecondOTP !== '' && valueThirdOTP !== '' && valueFourOTP !== '' && valueFiveOTP !== '' && valueSixOTP !== '') {
-          const valueInputOtp = `${valueFirstOTP}${valueSecondOTP}${valueThirdOTP}${valueFourOTP}${valueFiveOTP}${valueSixOTP}`;
-          Object.getPrototypeOf(final).confirm(valueInputOtp).then((result: any) => {
+        //   const valueInputOtp = parseInt(`${valueFirstOTP}${valueSecondOTP}${valueThirdOTP}${valueFourOTP}${valueFiveOTP}${valueSixOTP}`,10);
+        //   console.log(valueInputOtp, 'valueInputOtp')
+          Object.getPrototypeOf(final) && Object.getPrototypeOf(final).confirm(123456).then((result: any) => {
             // success
             console.log('ok-done')
           }).catch((err: {}) => {
@@ -122,14 +124,14 @@ const useStyles = makeStyles(() => ({
     return (
       <Box>
         <Box textAlign="left" padding="20px" marginTop="20px">
-          <Typography variant="h4" component="h4" >DayOne</Typography>
+          {!openLogin && <Typography variant="h4" component="h4" >DayOne</Typography>}
         </Box>
         <Box padding={"20px"}>
           <Box>
-            {showLogin ? <Typography variant="h4" component="h4" >Login </Typography> : !showOTP ? <Typography variant="h4" component="h4" >Let's get started!</Typography> : <Typography variant="h4" component="h4" >Please enter <br /> verification code.</Typography>}
+            {openLogin ?<></> : showLogin ? <Typography variant="h4" component="h4" >Login </Typography> : !showOTP ? <Typography variant="h4" component="h4" >Let's get started!</Typography> : <Typography variant="h4" component="h4" >Please enter <br /> verification code.</Typography>}
           </Box>
           <Box>
-            {showLogin ? <Login countryCodeArray={countryCode} /> : !showOTP ? <VerificationNumber setShowLogin={setShowLogin} setValueSubmit={setValueSubmit} setfinal={setfinal} setShowOTP={setShowOTP} countryCodeArray={countryCode} /> :
+            {showLogin ? <Login openLogin={openLogin} setOpenLogin={setOpenLogin} countryCodeArray={countryCode} /> : !showOTP ? <VerificationNumber setShowLogin={setShowLogin} setValueSubmit={setValueSubmit} setfinal={setfinal} setShowOTP={setShowOTP} countryCodeArray={countryCode} /> :
               <VerificationCode valueFirstOTP={valueFirstOTP} valueSecondOTP={valueSecondOTP} valueThirdOTP={valueThirdOTP} valueFourOTP={valueFourOTP} valueFiveOTP={valueFiveOTP} valueSixOTP={valueSixOTP} changeInputFirst={changeInputFirst} changeInputSecond={changeInputSecond} changeInputThird={changeInputThird} changeInputFour={changeInputFour} changeInputFive={changeInputFive} changeInputSix={changeInputSix} errorOTP={errorOTP} />
             }
   
