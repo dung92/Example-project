@@ -1,39 +1,39 @@
 import React, { useEffect, useState } from 'react';
-import { Box, MenuItem, Typography, Button, TextField, InputAdornment, Grid, Hidden, Link, OutlinedInput } from '@material-ui/core';
-import { FormikHelpers, Formik, Form, Field, FieldProps } from 'formik';
-import * as yup from 'yup';
-import { ModelOTP } from './model';
-import firebase from '../../config/firebase';
-import Firebase from 'firebase/app';
+import { Box, Typography, Button, makeStyles } from '@material-ui/core';
+import { countryCode } from '../../API/CountryCode';
+import { VerificationCode } from '../../pages/VerificationCode';
+import { VerificationNumber } from '../../pages/VerificationNumber';
+import { ModelVerifyNumber } from '../../model/ModelVerifyNumber';
+import { PopUpResendCode } from '../../pages/PopUpResendCode';
+import { Login } from '../../pages/Login';
 
-const validationSchema = yup.object().shape({
-  phone: yup.string()
-    .required('Phone is required'),
-  country: yup.string()
-    .required('Country is required'),
-})
-
-
+const useStyles = makeStyles(() => ({
+  rootButton: {
+    paddingTop: 0
+  },
+}));
 
 const OTP = () => {
   const [showOTP, setShowOTP] = useState(false);
-  const [valueFirstInput, setValueFirstInput] = useState('');
-  const [valueSecondInput, setValueSecondInput] = useState('');
-  const [valueThirdInput, setValueThirdInput] = useState('');
-  const [valueFourInput, setValueFourInput] = useState('');
-  const [valueFiveInput, setValueFiveInput] = useState('');
-  const [valueSixInput, setValueSixInput] = useState('');
-  const [valueSubmit, setValueSubmit] = useState<ModelOTP>({
-    phone: '',
-    country: ''
+  const [valueFirstOTP, setValueFirstOTP] = useState('');
+  const [valueSecondOTP, setValueSecondOTP] = useState('');
+  const [valueThirdOTP, setValueThirdOTP] = useState('');
+  const [valueFourOTP, setValueFourOTP] = useState('');
+  const [valueFiveOTP, setValueFiveOTP] = useState('');
+  const [valueSixOTP, setValueSixOTP] = useState('');
+  const [valueSubmit, setValueSubmit] = useState<ModelVerifyNumber>({
+    phone: 0,
+    countryCode: 65
   });
-
   const [final, setfinal] = useState({});
-
   const [errorOTP, setErrorOTP] = useState({
     errorValidNumber: '',
     errorNullOTP: ''
   })
+  const [open, setOpen] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+
+  const classes = useStyles();
 
   useEffect(() => {
     setErrorOTP({
@@ -47,9 +47,9 @@ const OTP = () => {
     // Update the document title using the browser API
     const numbers = /^[0-9]+$/;
 
-    if (valueFirstInput === '' || valueSecondInput === '' || valueThirdInput === '' || valueFourInput === '' || valueFiveInput === '' || valueSixInput === '') {
-      if (valueFirstInput !== '' || valueSecondInput !== '' || valueThirdInput !== '' || valueFourInput !== '' || valueFiveInput !== '' || valueSixInput !== '') {
-        if (!valueFirstInput.match(numbers) || !valueSecondInput.match(numbers) || !valueThirdInput.match(numbers) || !valueFourInput.match(numbers) || !valueFiveInput.match(numbers) || !valueSixInput.match(numbers)) {
+    if (valueFirstOTP === '' || valueSecondOTP === '' || valueThirdOTP === '' || valueFourOTP === '' || valueFiveOTP === '' || valueSixOTP === '') {
+      if (valueFirstOTP !== '' || valueSecondOTP !== '' || valueThirdOTP !== '' || valueFourOTP !== '' || valueFiveOTP !== '' || valueSixOTP !== '') {
+        if (!valueFirstOTP.match(numbers) || !valueSecondOTP.match(numbers) || !valueThirdOTP.match(numbers) || !valueFourOTP.match(numbers) || !valueFiveOTP.match(numbers) || !valueSixOTP.match(numbers)) {
           setErrorOTP({ errorValidNumber: 'Invaid OTP', errorNullOTP: 'Please fill all input' })
         } else {
           setErrorOTP({ errorValidNumber: '', errorNullOTP: '' })
@@ -58,20 +58,18 @@ const OTP = () => {
         setErrorOTP({ errorValidNumber: '', errorNullOTP: 'Please fill all input' })
       }
     } else {
-      if (valueFirstInput !== '' && valueSecondInput !== '' && valueThirdInput !== '' && valueFourInput !== '' && valueFiveInput !== '' && valueSixInput !== '') {
-        const valueInputOtp = `${valueFirstInput}${valueSecondInput}${valueThirdInput}${valueFourInput}${valueFiveInput}${valueSixInput}`;
-      
-         
-          Object.getPrototypeOf(final).confirm(valueInputOtp).then((result: any) => {
-            // success
-            console.log('ok-done')
-          }).catch((err: any) => {
-            alert("Wrong code");
-          })
-        
+      if (valueFirstOTP !== '' && valueSecondOTP !== '' && valueThirdOTP !== '' && valueFourOTP !== '' && valueFiveOTP !== '' && valueSixOTP !== '') {
+        const valueInputOtp = `${valueFirstOTP}${valueSecondOTP}${valueThirdOTP}${valueFourOTP}${valueFiveOTP}${valueSixOTP}`;
+        Object.getPrototypeOf(final).confirm(valueInputOtp).then((result: any) => {
+          // success
+          console.log('ok-done')
+        }).catch((err: {}) => {
+          alert("Wrong code");
+        })
+
       }
-      if (valueFirstInput !== '' || valueSecondInput !== '' || valueThirdInput !== '' || valueFourInput !== '' || valueFiveInput !== '' || valueSixInput !== '') {
-        if (!valueFirstInput.match(numbers) || !valueSecondInput.match(numbers) || !valueThirdInput.match(numbers) || !valueFourInput.match(numbers) || !valueFiveInput.match(numbers) || !valueSixInput.match(numbers)) {
+      if (valueFirstOTP !== '' || valueSecondOTP !== '' || valueThirdOTP !== '' || valueFourOTP !== '' || valueFiveOTP !== '' || valueSixOTP !== '') {
+        if (!valueFirstOTP.match(numbers) || !valueSecondOTP.match(numbers) || !valueThirdOTP.match(numbers) || !valueFourOTP.match(numbers) || !valueFiveOTP.match(numbers) || !valueSixOTP.match(numbers)) {
           setErrorOTP({ errorValidNumber: 'Invaid OTP', errorNullOTP: '' })
         } else {
           setErrorOTP({ errorValidNumber: '', errorNullOTP: '' })
@@ -82,32 +80,43 @@ const OTP = () => {
     }
 
 
-  }, [valueFirstInput, valueSecondInput, valueThirdInput, valueFourInput, valueFiveInput, valueSixInput]);
+  }, [valueFirstOTP, valueSecondOTP, valueThirdOTP, valueFourOTP, valueFiveOTP, valueSixOTP]);
 
   const changeInputFirst = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValueFirstInput(event.target.value)
+    setValueFirstOTP(event.target.value)
   }
 
   const changeInputSecond = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValueSecondInput(event.target.value)
+    setValueSecondOTP(event.target.value)
   }
 
   const changeInputThird = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValueThirdInput(event.target.value)
+    setValueThirdOTP(event.target.value)
   }
 
   const changeInputFour = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValueFourInput(event.target.value)
+    setValueFourOTP(event.target.value)
   }
 
   const changeInputFive = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValueFiveInput(event.target.value)
+    setValueFiveOTP(event.target.value)
   }
 
   const changeInputSix = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValueSixInput(event.target.value)
+    setValueSixOTP(event.target.value)
   }
 
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const registerAnotherPhone = () => {
+    setShowOTP(false);
+  }
 
   return (
     <Box>
@@ -116,203 +125,11 @@ const OTP = () => {
       </Box>
       <Box padding={"20px"}>
         <Box>
-          {!showOTP ? <Typography variant="h4" component="h4" >Let's get started!</Typography> : <Typography variant="h4" component="h4" >Please enter <br /> verification code.</Typography>}
+          {showLogin ? <Typography variant="h4" component="h4" >Login </Typography> : !showOTP ? <Typography variant="h4" component="h4" >Let's get started!</Typography> : <Typography variant="h4" component="h4" >Please enter <br /> verification code.</Typography>}
         </Box>
         <Box>
-          {!showOTP ? <Formik
-            initialValues={{
-              country: '',
-              phone: ''
-            }}
-            validationSchema={validationSchema}
-            onSubmit={(
-              values: ModelOTP,
-              { setSubmitting }: FormikHelpers<ModelOTP>
-            ) => {
-              setValueSubmit({
-                country:'',
-                phone: values.phone
-              })
-              let verify = new Firebase.auth.RecaptchaVerifier('recaptcha-container');
-              firebase.auth().signInWithPhoneNumber(values.phone, verify).then((confirmationResult) => {
-                console.log(Object.getPrototypeOf(confirmationResult).confirm(), 'confirmationResult')
-                console.log("OTP has been sent")
-                setfinal(confirmationResult);
-                setSubmitting(false);
-                setShowOTP(true)
-              }).catch((error) => {
-                console.log("SMS not sent")
-              });
-
-            }}
-          >
-            {({ errors, touched, submitForm }) => (
-              <Form>
-                <Box margin={'20px 0px 20px 0px '}>
-                  <Grid container>
-                    <Grid item md={4}>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <Field
-                        name='country'
-                      >
-                        {({
-                          field
-                        }: FieldProps<ModelOTP>) => (
-                          <TextField
-                            value={field.value || ''}
-                            onChange={field.onChange}
-                            name={field.name}
-                            variant="outlined"
-                            error={!!errors.country && touched.phone}
-                            helperText={!!errors.country && touched.country ? errors.country : ''}
-                            label="Country"
-                            select
-                            fullWidth
-                            InputProps={{
-                              startAdornment: <InputAdornment position="start">+65</InputAdornment>,
-                            }}
-
-                          >
-                            <MenuItem value={10}>Ten</MenuItem>
-                            <MenuItem value={20}>Twenty</MenuItem>
-                            <MenuItem value={30}>Thirty</MenuItem>
-                          </TextField>
-
-                        )}
-                      </Field>
-                    </Grid>
-                    <Grid item md={4}>
-                    </Grid>
-                  </Grid>
-                </Box>
-                <Box margin={'20px 0px 20px 0px '}>
-                  <Grid container>
-                    <Grid item md={4}>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <Field
-                        name='phone'
-                      >
-                        {({
-                          field
-                        }: FieldProps<ModelOTP>) => (
-                          <TextField
-                            value={field.value || ''}
-                            onChange={field.onChange}
-                            name={field.name}
-                            variant="outlined"
-                            label="Phone Number"
-                            error={!!errors.phone && touched.phone}
-                            helperText={!!errors.phone && touched.phone ? errors.phone : ''}
-                            fullWidth
-                          />
-                        )}
-                      </Field>
-                    </Grid>
-                    <Grid item md={4}>
-                    </Grid>
-                  </Grid>
-                </Box>
-                <Box>
-                  <Hidden only="xs">
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={submitForm}
-                    >
-                      Verify Number
-                    </Button>
-                  </Hidden>
-
-                  <Hidden only="lg" smUp>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={submitForm}
-                      fullWidth
-                    >
-                      Verify Number
-                    </Button>
-                  </Hidden>
-                  <div id="recaptcha-container" />
-                </Box>
-
-                <Box marginTop="20px">
-                  <Grid container>
-                    <Grid item md={4}>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <Grid container>
-                        <Grid item xs={9} md={8}>
-                          <b>
-                            ALREADY HAVE AN ACCOUNT?
-                          </b>
-                        </Grid>
-                        <Hidden only="lg" smUp>
-                          <Grid item xs={1}>
-                          </Grid>
-                        </Hidden>
-
-                        <Grid item xs={2} md={4}>
-                          <Link href="#" underline="none">
-                            LOG IN
-                          </Link>
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                    <Grid item md={4}>
-                    </Grid>
-                  </Grid>
-                </Box>
-              </Form>
-            )}
-          </Formik> :
-            <Box mt="20px">
-              <Grid container>
-                <Grid item md={4}>
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <Grid container>
-                    <Grid item xs={2} md={2}>
-                      <Box>
-                        <OutlinedInput value={valueFirstInput} onChange={changeInputFirst} />
-                      </Box>
-                    </Grid>
-                    <Grid item xs={2} md={2}>
-                      <Box ml="5px">
-                        <OutlinedInput value={valueSecondInput} onChange={changeInputSecond} />
-                      </Box>
-                    </Grid>
-                    <Grid item xs={2} md={2}>
-                      <Box ml="5px">
-                        <OutlinedInput value={valueThirdInput} onChange={changeInputThird} />
-                      </Box>
-                    </Grid>
-                    <Grid item xs={2} md={2}>
-                      <Box ml="5px">
-                        <OutlinedInput value={valueFourInput} onChange={changeInputFour} />
-                      </Box>
-                    </Grid>
-                    <Grid item xs={2} md={2}>
-                      <Box ml="5px">
-                        <OutlinedInput value={valueFiveInput} onChange={changeInputFive} />
-                      </Box>
-                    </Grid>
-                    <Grid item xs={2} md={2}>
-                      <Box ml="5px">
-                        <OutlinedInput value={valueSixInput} onChange={changeInputSix} />
-                      </Box>
-                    </Grid>
-                    {errorOTP.errorValidNumber !== '' && <Box display="flex" justifyContent="center" width="100%" marginTop="10px" alignItems="center" color="red">{errorOTP.errorValidNumber}</Box>}
-                    {errorOTP.errorNullOTP !== '' && <Box display="flex" justifyContent="center" width="100%" marginTop="10px" alignItems="center" color="red">{errorOTP.errorNullOTP}</Box>}
-                  </Grid>
-                </Grid>
-                <Grid item md={4}>
-                </Grid>
-              </Grid>
-
-            </Box>
+          {showLogin ? <Login countryCodeArray={countryCode} /> : !showOTP ? <VerificationNumber setShowLogin={setShowLogin} setValueSubmit={setValueSubmit} setfinal={setfinal} setShowOTP={setShowOTP} countryCodeArray={countryCode} /> :
+            <VerificationCode valueFirstOTP={valueFirstOTP} valueSecondOTP={valueSecondOTP} valueThirdOTP={valueThirdOTP} valueFourOTP={valueFourOTP} valueFiveOTP={valueFiveOTP} valueSixOTP={valueSixOTP} changeInputFirst={changeInputFirst} changeInputSecond={changeInputSecond} changeInputThird={changeInputThird} changeInputFour={changeInputFour} changeInputFive={changeInputFive} changeInputSix={changeInputSix} errorOTP={errorOTP} />
           }
 
         </Box>
@@ -320,16 +137,23 @@ const OTP = () => {
           {showOTP && <p>A code has been sent to {valueSubmit.phone} via SMS</p>}
         </Box>
         <Box fontWeight="bold">
-          {showOTP && <Link href="#" underline="none">
-            RESEND CODE
-          </Link>}
+          {showOTP &&
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleOpen}
+              className={classes.rootButton}
+            >
+              RESEND CODE
+            </Button>
+          }
         </Box>
 
         <Box fontWeight="bold">
-          {showOTP && <p>REGITER WITH ANOTHER NUMBER</p>}
+          {showOTP && <p onMouseEnter={registerAnotherPhone}>REGITER WITH ANOTHER NUMBER</p>}
         </Box>
       </Box>
-
+      {open && <PopUpResendCode open={open} handleClose={handleClose} phone={valueSubmit.phone} />}
     </Box >
   )
 }

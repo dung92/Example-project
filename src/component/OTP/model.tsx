@@ -1,4 +1,4 @@
 export interface ModelOTP {
-    country: string;
-    phone: string;
+    countryCode: number;
+    phone: number;
 }
