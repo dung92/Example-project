@@ -37,6 +37,7 @@ export const VerificationNumber = (props: ModelVerifiCationNumberProp) => {
         setShowLogin(true);
     }
 
+
     return (
         <Formik
             initialValues={{
@@ -50,8 +51,9 @@ export const VerificationNumber = (props: ModelVerifiCationNumberProp) => {
             ) => {
                 setSubmitting(false);
                 const valueSubmitPhone = { ...values };
-                let verify = new Firebase.auth.RecaptchaVerifier('recaptcha-container');
+                let verify = new Firebase.auth.RecaptchaVerifier('recaptcha-container', { size: "invisible" });
                 firebase.auth().signInWithPhoneNumber(`+${values.countryCode}` + valueSubmitPhone.phone, verify).then((confirmationResult) => {
+                    console.log(confirmationResult, 'confirmationResult')
                     setfinal(confirmationResult);
                     setValueSubmit({
                         phone: values.phone,
